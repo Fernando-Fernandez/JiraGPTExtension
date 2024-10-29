@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./popup.css" />
+  </head>
+  <body >
+    <h1>GPT Extension for Jira/Bitbucket</h1>
+    <span id="error" ></span>
+
+    <ul class="tabs" role="tablist">
+      <li>
+        <input type="radio" name="tabs" class="tab" id="tab2" checked />
+        <label for="tab2" class="tab" role="tab" aria-selected="true" aria-controls="panel2" tabindex="0">Ask GPT</label>
+        <div id="tab-content2" class="tab-content" role="tabpanel" aria-labelledby="askGPT" >
+          <p class="promptDialog">
+
+            <label for="gptQuestion" >Ask your question (blank = default prompt):</label>
+            <div class="promptQuestion" >
+              <textarea id="gptQuestion" rows="2" ></textarea>
+
+              <button id="sendToGPT" >Ask GPT</button>
+            </div>
+        
+            <br />
+            <div id="spinner" class="lds-dual-ring"></div>
+            <span id="response" > </span>
+
+          </p>
+        </div>
+      </li>
+      <li>
+        <input type="radio" name="tabs" id="tab1" class="tab" />
+        <label for="tab1" class="tab" role="tab" aria-selected="false" aria-controls="panel1" tabindex="0">OpenAI Key</label>
+        <div id="tab-content1" class="tab-content" role="tabpanel" aria-labelledby="openAIKey" >
+          <p>
+            <div>
+              <label for="gpt-version" >Select your preferred OpenAI model.</label>
+              <input type="radio" id="gpt-4o" name="gpt-version" value="gpt-4o" checked>
+              <label for="gpt-4o">gpt-4o</label>
+              <input type="radio" id="gptVersion" name="gpt-version" value="gpt-4o-mini" >
+              <label for="gpt-4o-mini">gpt-4o-mini</label>
+            </div>
+            <button id="setModel" >Set OpenAI model</button>
+            <br />
+
+            <label for="openAIKey" >Enter your OpenAI key to be able to ask questions about Jira/Bitbucket pages.</label>
+            <input id="openAIKey" type="password" name="openAIKey" />
+            &nbsp;&nbsp;
+            <button id="setKey" >Set OpenAI key</button>
+
+          </p>
+        </div>
+      </li>
+    </ul>
+
+    <script src="./scripts/popup.js" type="module"></script>
+  </body>
+</html>

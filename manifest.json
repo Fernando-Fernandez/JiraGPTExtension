@@ -1,0 +1,56 @@
+{
+    "manifest_version": 3,
+    "name": "GPT Extension for Jira and Bitbucket",
+    "description": "Gets a GPT answer about a Jira/Bitbucket item",
+    "version": "1.00",
+    "icons": {
+        "16": "images/icon-16.png",
+        "32": "images/icon-32.png",
+        "48": "images/icon-48.png",
+        "128": "images/icon-128.png"
+    },
+    "action": {
+        "default_icon": {
+            "16": "images/icon-16.png",
+            "32": "images/icon-32.png",
+            "48": "images/icon-48.png",
+            "128": "images/icon-128.png"
+        },
+        "default_popup": "popup.html"
+    },
+    "commands": {
+        "_execute_action": {
+            "suggested_key": {
+                "default": "Ctrl+J",
+                "mac": "Command+J"
+            }
+        }
+    },
+    "content_scripts": [
+      {
+        "js": [
+          "scripts/content.js"
+        ]
+        , "type": "module"
+        , "run_at": "document_start"
+        , "matches": [
+          "https://*.bitbucket.org/*",
+          "https://*.atlassian.net/*"
+        ]
+        , "all_frames": true
+      }
+    ],
+    "web_accessible_resources": [ {
+      "matches": [ 
+        "https://*.bitbucket.org/*",
+        "https://*.atlassian.net/*"
+      ],
+      "resources": [ "scripts/*" ]
+    } ],
+
+    "permissions": [ "activeTab", "cookies" ],
+    "host_permissions": [
+      "https://*.bitbucket.org/*",
+      "https://*.atlassian.net/*"
+    ]
+}

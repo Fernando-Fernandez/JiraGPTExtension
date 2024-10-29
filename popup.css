@@ -1,0 +1,127 @@
+* {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+BODY {
+  width: 600px;
+}
+
+H1 {
+    margin-block-end: 0;
+    margin-block-start: 0;
+    font-size: larger;
+}
+
+H4 {
+    margin-block-start: 0;
+    margin-block-end: 0;
+}
+
+.promptDialog {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto;
+  gap: 1px;
+  margin: 0;
+}
+.promptQuestion {
+  display: grid;
+  grid-template-columns: 90% 10%;
+  gap: 1px;
+}
+
+#error {
+    font-weight: bold; 
+    color: red;
+}
+
+.lds-dual-ring {
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+}
+.lds-dual-ring:after {
+    content: " ";
+    display: block;
+    width: 30px;
+    height: 30px;
+    margin: 8px;
+    border-radius: 50%;
+    border: 6px solid cyan;
+    border-color: cyan transparent cyan transparent;
+    animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+
+.tabs {
+    width: 87%;
+    float: none;
+    list-style: none;
+    position: relative;
+    margin: 10px 0;
+    text-align: left;
+  }
+
+  .tabs li {
+    float: left;
+    display: block;
+    width: 50%;
+  }
+
+  .tabs input[type="radio"].tab {
+    position: absolute;
+    top: 0;
+    left: -9999px;
+  }
+
+  .tabs label.tab {
+    display: block;
+    padding: 4px 1px;
+    border-radius: 2px 2px 0 0;
+    font-size: 16px;
+    font-weight: normal;
+    background: lightgray;
+    cursor: pointer;
+    text-align: center;
+    position: relative;
+    top: 4px;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .tabs label.tab:hover {
+    background: lightslategray;
+    color: white;
+  }
+
+  .tabs .tab-content {
+    z-index: 2;
+    display: none;
+    overflow: hidden;
+    width: 100%;
+    font-size: 14px;
+    line-height: 20px;
+    padding: 5px;
+    position: absolute;
+    left: 0;
+    background: whitesmoke;
+  }
+
+  .tabs [id^="tab"]:checked + label.tab {
+    top: 0;
+    padding-top: 7px;
+    background: whitesmoke;
+    color: black;
+  }
+
+  .tabs [id^="tab"]:checked ~ [id^="tab-content"] {
+    display: block;
+  }
