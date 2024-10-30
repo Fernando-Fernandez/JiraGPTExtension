@@ -1,4 +1,24 @@
 const GETDATA = "getData";
+const SELECTORS = {
+    JIRA: {
+        MODAL: "#jira > div.atlaskit-portal-container > div:nth-child(3) > div > div:nth-child(2) > div > div > section > div > div > div > div > div > div:nth-child(2)",
+        PAGE: "#ak-main-content > div > div > div > div > div > div > div > div > div"
+    },
+    BITBUCKET: {
+        PR_CHANGES: "#main > div > div > div > div > div > div:nth-child(3) > div > div",
+        SOURCE: "#main > div > div > div > div > div",
+        PR: "#main > div > div > div > div"
+    },
+    CONFLUENCE: {
+        PAGE: "#content-body > div > div > div > div > div > div:nth-child(3)"
+    }
+};
+
+const URL_PATTERNS = {
+    JIRA: [ ".atlassian.net/browse", ".atlassian.net/jira/" ],
+    CONFLUENCE: [ ".atlassian.net/wiki" ],
+    BITBUCKET: [ "bitbucket.org/" ]
+};
 
 let sfHost, sessionId, flowDefinition, url;
 
@@ -31,30 +51,9 @@ function processRequestMessage( request, sender, sendResponse ) {
 
     // get URL of current page
     let currentPageURL = window.location.href;
-    
+
     // get article or document node
-    let article = document.querySelector( "#jira > div.atlaskit-portal-container > div:nth-child(3) > div > div:nth-child(2) > div > div > section > div > div > div > div > div > div:nth-child(2)" ); // Jira ticket modal
-    if( ! article ) {
-        // Jira ticket page
-        article = document.querySelector( "#ak-main-content > div > div > div > div > div > div > div > div > div" );
-    }
-    if( ! article ) {
-        // Bitbucket pull request changes
-        article = document.querySelector( "#main > div > div > div > div > div > div:nth-child(3) > div > div" );
-    }
-    if( ! article ) {
-        // Bitbucket source code
-        article = document.querySelector( "#main > div > div > div > div > div" );
-    }
-    if( ! article ) {
-        // Bitbucket pull request
-        article = document.querySelector( "#main > div > div > div > div" );
-        // #main > div > div > div > div > div > div:nth-child(3) > div
-        // #pull-request-tabs-1-tab > div
-    }
-    if( ! article ) {
-        article = document.querySelector( "body" );
-    }
+    let article = getArticleElement();
 
     // extract all text from document/article
     let textNodes = getChildrenTextNodes( article );
@@ -70,17 +69,24 @@ function processRequestMessage( request, sender, sendResponse ) {
 
     let prompt = 'Please briefly explain the following page and make suggestions on how to improve the description or other inforative fields.';
 
-    // change prompt depending on the page
     let resultData = pageContent;
-    if( url.includes( ".atlassian.net/browse" ) || url.includes( ".atlassian.net/jira/" ) ) {
-        ( { resultData, prompt } = prepareJiraTicketForOpenAI( pageContent ) );
-    }
-    if( url.includes( "bitbucket.org/" ) ) {
-        if( url.includes( "/pull-request/" ) && url.includes( "/diff#" ) ) {
-            ( { resultData, prompt } = prepareBitbucketPullRequestForOpenAI( pageContent ) );
-        } else {
-            ( { resultData, prompt } = prepareBitbucketPageForOpenAI( pageContent ) );
-        }
+
+    // change prompt depending on the page
+    const pageType = getPageType(url);
+    switch(pageType) {
+        case 'JIRA':
+            ( { resultData, prompt } = prepareJiraTicketForOpenAI(pageContent) );
+            break;
+        case 'CONFLUENCE':
+            ({ resultData, prompt } = prepareConfluencePageForOpenAI(pageContent));
+            break;
+        case 'BITBUCKET':
+            if( url.includes( "/pull-request/" ) && url.includes( "/diff#" ) ) {
+                ( { resultData, prompt } = prepareBitbucketPullRequestForOpenAI( pageContent ) );
+            } else {
+                ( { resultData, prompt } = prepareBitbucketPageForOpenAI( pageContent ) );
+            }
+            break;
     }
 
     // send page content to popup window
@@ -92,6 +98,34 @@ function processRequestMessage( request, sender, sendResponse ) {
     return true;
 }
 
+function getArticleElement() {
+    const selectors = [
+        SELECTORS.JIRA.MODAL,
+        SELECTORS.JIRA.PAGE,
+        SELECTORS.BITBUCKET.PR_CHANGES,
+        SELECTORS.BITBUCKET.SOURCE,
+        SELECTORS.BITBUCKET.PR,
+        SELECTORS.CONFLUENCE.PAGE,
+        "body" // fallback
+    ];
+
+    return selectors.reduce( ( found, selector ) => 
+            found || document.querySelector( selector ), null );
+}
+
+function getPageType( url ) {
+    if (URL_PATTERNS.JIRA.some(pattern => url.includes(pattern))) {
+        return 'JIRA';
+    }
+    if (URL_PATTERNS.CONFLUENCE.some(pattern => url.includes(pattern))) {
+        return 'CONFLUENCE';
+    }
+    if (URL_PATTERNS.BITBUCKET.some(pattern => url.includes(pattern))) {
+        return 'BITBUCKET';
+    }
+    return 'UNKNOWN';
+}
+
 function prepareJiraTicketForOpenAI( ticketData ) {
     let resultData = ticketData.replaceAll( "Add parent", "" ).replaceAll( "Add", "" )
                             .replaceAll( "Edit", "" ).replaceAll( "Delete", "" ).replaceAll( "Show:", "" )
@@ -100,6 +134,14 @@ function prepareJiraTicketForOpenAI( ticketData ) {
     return {
         resultData: resultData
         , prompt: 'Please briefly explain the following Jira ticket and make suggestions on how to improve it, what to add to the blank fields.' 
+    }
+}
+function prepareConfluencePageForOpenAI( ticketData ) {
+    let resultData = ticketData.replaceAll( "Be the first to add a reaction", "" );
+
+    return {
+        resultData: resultData
+        , prompt: 'Please briefly explain the following Confluence page and make suggestions on how to improve it or correct it.' 
     }
 }
 
