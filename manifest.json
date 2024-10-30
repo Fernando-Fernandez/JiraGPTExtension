@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
-    "name": "GPT Extension for Jira and Bitbucket",
-    "description": "Gets a GPT answer about a Jira/Bitbucket item",
+    "name": "GPT Extension for Jira, Bitbucket and Confluence",
+    "description": "Gets a GPT answer about a Jira ticket, Confluence page, Bitbucket source code, commit or pull request",
     "version": "1.00",
     "icons": {
         "16": "images/icon-16.png",
@@ -48,7 +48,7 @@
       "resources": [ "scripts/*" ]
     } ],
 
-    "permissions": [ "activeTab", "cookies" ],
+    "permissions": [ "activeTab" ],
     "host_permissions": [
       "https://*.bitbucket.org/*",
       "https://*.atlassian.net/*"

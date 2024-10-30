@@ -175,8 +175,8 @@ function sendToGPT( dataObject, openAIKey ) {
 
             model = 'gpt-4o';
             // truncate data as needed
-            if( data.length > 130872 ) {
-                data = data.substring( 0, 130872 );
+            if( data.length > 30000 ) {
+                data = data.substring( 0, 30000 );
             }
         }
 
@@ -215,12 +215,16 @@ function sendToGPT( dataObject, openAIKey ) {
                     }
                 }
 
-                // store response in local cache
-                const cacheKey = JSON.stringify( { currentURL, resultData, prompt } );
-                sessionStorage.setItem( cacheKey, JSON.stringify( { 
-                                                cachedDate: Date.now() 
-                                                , parsedResponse } ) 
-                                        );
+                try {
+                    // store response in local cache
+                    const cacheKey = JSON.stringify( { currentURL, resultData, prompt } );
+                    sessionStorage.setItem( cacheKey, JSON.stringify( { 
+                                                    cachedDate: Date.now() 
+                                                    , parsedResponse } ) 
+                                            );
+                } catch( e ) {
+                    console.error( e );
+                }
 
                 // display response 
                 responseSpan.innerText = parsedResponse;
